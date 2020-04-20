@@ -36,7 +36,14 @@ http://localhost:3000/api/fetch-hospitals?zip_code=33160&radius_mi=15&resource_t
 
 ### Getting Started
 
-First, run the development server:
+First, get a GCP Geocoding API key [here](https://developers.google.com/maps/documentation/geocoding/get-api-key). Create
+a `.env` file in your root folder to store this key, and add the following:
+
+``` 
+GCP_KEY=<your key here>
+```
+
+Then, run the development server:
 
 ```bash
 $ yarn dev
@@ -47,8 +54,11 @@ Open [http://localhost:3000/api/test](http://localhost:3000/api/test) with your 
 ### Deployment on ZEIT
 Simply install and run `now` on your local machine to deploy your code to their servers. It's really that simple.
 ``` 
-$ yarn global add now && now
+$ yarn global add now
+$ now --prod
 ```
+
+**Note:** if you're getting an error, you may need to add your `GCP_KEY` in ZEIT's settings dashboard: [zeit.co/{TEAM}/{PROJECT}/settings](https://zeit.co).
 
 # 💰 Sponsors
 Huge thank you to [ZEIT](https://zeit.co/) for sponsoring this project and our related COVID-19 efforts, without them 
