@@ -59,7 +59,26 @@ a {
 }
 .description {
     line-height: 1.5;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
+    display: flex;
+    width: 50%;
+    margin-top: 10px!important;
+}
+.description span {
+    color: rgba(0,0,0,0.5);
+    border-right: 1px solid;
+}
+.description img {
+    max-width: 25px;
+    vertical-align: text-top;
+    padding-left: 20px;
+    padding-right: 10px;
+}
+.description a {
+    padding-left: 20px;
+}
+.description a:hover {
+    text-decoration: none;
 }
 code {
     background: #fafafa;
