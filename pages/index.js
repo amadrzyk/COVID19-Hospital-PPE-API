@@ -54,13 +54,7 @@ export default class Home extends React.Component {
                     </div>
                 </main>
                 <footer>
-                    <a
-                      href="https://zeit.co?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                  >
-                      Powered by <img src="/zeit.svg" alt="ZEIT Logo" />
-                  </a>
+                    Made with 💙by the COVID-19 Response Team and the&nbsp;<a target="_blank" rel="noopener noreferrer" href="https://www.facebook.com/InventionCorps/">Invention Corps</a>&nbsp;Community
                 </footer>
             </div>
         )
