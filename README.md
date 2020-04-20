@@ -14,14 +14,17 @@ If you'd like to help out with our efforts, please feel free to reach out! My em
 
 ### Query Parameters
 - `radius_mi`
+    - DESCRIPTION: radius around zip code in which to search for hospitals, in miles
     - REQUIRED: no
     - TYPE: number 
     - DEFAULT: 15 miles
 - `zip_code`
+    - DESCRIPTION: 5-digit US zip code
     - REQUIRED: yes
     - TYPE: number
     - DEFAULT: none
 - `resource_types`
+    - DESCRIPTION: filter for which hospitals display, i.e. those that are looking for only `mask` and `gown` donations
     - REQUIRED: yes
     - TYPE: array, at least one of the following options must be selected
         - `'all', 'mask', 'respirator', 'shield', 'gown', 'disinfectant', 'gloves', 'footwear', 'eyewear', 'accessories'`
@@ -36,14 +39,19 @@ http://localhost:3000/api/fetch-hospitals?zip_code=33160&radius_mi=15&resource_t
 
 ### Getting Started
 
-First, get a GCP Geocoding API key [here](https://developers.google.com/maps/documentation/geocoding/get-api-key). Create
+First, clone the Github repository onto your local machine.
+```
+$ git clone https://github.com/amadrzyk/COVID19-Hospital-PPE-API.git
+```
+
+Then, get a GCP Geocoding API key [here](https://developers.google.com/maps/documentation/geocoding/get-api-key). Create
 a `.env` file in your root folder to store this key, and add the following:
 
 ``` 
 GCP_KEY=<your key here>
 ```
 
-Then, run the development server:
+Lastly, run the development server:
 
 ```bash
 $ yarn dev
