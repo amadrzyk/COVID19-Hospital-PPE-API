@@ -2,9 +2,6 @@ import Head from 'next/head';
 import React from 'react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
-// const ReactMarkdown = require('react-markdown');
-import ReactGA from 'react-ga';
-ReactGA.initialize('UA-164042612-1');
 
 const README_PATH = '../README.md';
 
@@ -27,8 +24,6 @@ export default class Home extends React.Component {
             console.error(err);
         }
 
-        ReactGA.pageview(ctx.req.headers.host + ctx.req.pathname);
-
         return {readme: response ? response.data : ''};
     }
 
@@ -47,7 +42,7 @@ export default class Home extends React.Component {
 
                     <p className="description">
                         {/*<span>Find hospitals near you that are seeking PPE donations | </span>*/}
-                        <span>Location-based API to query<br/>for hospitals in need of PPE</span>
+                        <span>Location-based API to query for hospitals in need of PPE</span>
                         <br/>
                         {/*<img src="/Octicons-mark-github.svg" alt="github logo"/>*/}
                         <a target="_blank" rel="noopener noreferrer" href="https://github.com/amadrzyk/COVID19-Hospital-PPE-API">
