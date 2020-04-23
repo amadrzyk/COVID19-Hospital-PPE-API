@@ -1,6 +1,8 @@
 import { NowRequest, NowResponse } from '@now/node';
 import axios from 'axios';
 import * as turf from '@turf/turf';
+import Analytics from 'analytics'
+import googleAnalytics from '@analytics/google-analytics'
 
 // import environment variables in dev
 if (process.env.NODE_ENV !== 'production') {
@@ -34,17 +36,30 @@ const API_ENDPOINT = 'https://findthemasks.com/data.json',
           [RESOURCE_TYPES.FOOTWEAR]: ['booties', 'shoe', 'shoe cover'],
           [RESOURCE_TYPES.EYEWEAR]: ['eye', 'goggle'],
           [RESOURCE_TYPES.ACCESSORIES]: ['thermometer']
-      };
+      },
+      ANALYTICS = Analytics({
+          app: 'covid19-hospital-ppe-api',
+          plugins: [
+              googleAnalytics({
+                  trackingId: process.env.GA_TRACKING_ID
+              })
+          ]
+      });
 
 // api handler
 export default async (req: NowRequest, res: NowResponse) => {
     try {
         // fetch query args
-        let zip_code = req.query.zip_code as string,
+        let app_name = req.query.app_name as string,
+            zip_code = req.query.zip_code as string,
             radius_mi = (req.query.radius_mi || DEFAULT_RADIUS) as string,
             resource_types = JSON.parse((req.query.resource_types || "[]") as string);
 
         // validate input
+        if (!app_name)
+            throw 'app_name is undefined';
+        if (app_name.length < 5)
+            throw `app_name "${app_name}" is shorter than 5 characters`;
         if (!zip_code)
             throw 'zip_code is undefined';
         if (zip_code.length !== 5)
@@ -114,6 +129,18 @@ export default async (req: NowRequest, res: NowResponse) => {
                 turf.point([zipCodeCoords.lng, zipCodeCoords.lat]),
                 {units: 'miles'}
             ) < parseInt(radius_mi, 10);
+        });
+
+        // track information for analytics
+        await ANALYTICS.track('searched_hospitals', {
+            category: 'app_name',
+            label: app_name,
+            value: 1
+        });
+        await ANALYTICS.track('searched_hospitals', {
+            category: 'zip_code',
+            label: parseInt(zip_code),
+            value: 1
         });
 
         // return filtered locations

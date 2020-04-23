@@ -1,12 +1,15 @@
 import ReactGA from 'react-ga'
+import axios from 'axios'
 
-export const initGA = () => {
-    console.log('GA init');
-    ReactGA.initialize('UA-164042612-1')
+export const initGA = async () => {
+    // console.log('GA init');
+    let response = await axios.get('/api/fetch-ga-id');
+    let { id } = response.data;
+    ReactGA.initialize(id);
 };
 
 export const logPageView = () => {
-    console.log(`Logging pageview for ${window.location.pathname}`);
+    // console.log(`Logging pageview for ${window.location.pathname}`);
     ReactGA.set({ page: window.location.pathname });
     ReactGA.pageview(window.location.pathname);
 };

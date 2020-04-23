@@ -13,6 +13,11 @@ If you'd like to help out with our efforts, please feel free to reach out! My em
 # 🏹 API Querying
 
 ### Query Parameters
+- `app_name`
+    - DESCRIPTION: the name of your application
+    - REQUIRED: yes
+    - TYPE: string, at least 5 characters
+    - DEFAULT: none
 - `radius_mi`
     - DESCRIPTION: radius around zip code in which to search for hospitals, in miles
     - REQUIRED: no
@@ -32,7 +37,7 @@ If you'd like to help out with our efforts, please feel free to reach out! My em
     
 ### Sample API Call
 ``` 
-http://localhost:3000/api/fetch-hospitals?zip_code=33160&radius_mi=15&resource_types=[%22all%22,%22gloves%22]
+http://localhost:3000/api/fetch-hospitals?app_name=testing&zip_code=33160&radius_mi=15&resource_types=[%22all%22,%22gloves%22]
 ```
 
 # 💻 Development
@@ -44,11 +49,12 @@ First, clone the Github repository onto your local machine.
 $ git clone https://github.com/amadrzyk/COVID19-Hospital-PPE-API.git
 ```
 
-Then, get a GCP Geocoding API key [here](https://developers.google.com/maps/documentation/geocoding/get-api-key). Create
-a `.env` file in your root folder to store this key, and add the following:
+Then, get a GCP Geocoding API key [here](https://developers.google.com/maps/documentation/geocoding/get-api-key), and a Google
+Analytics ID [here](https://support.google.com/analytics/answer/1008080?hl=en). Create a `.env` file in your root folder to store this key, and add the following:
 
 ``` 
 GCP_KEY=<your key here>
+GA_TRACKING_ID=<your id here>
 ```
 
 Lastly, run the development server:
@@ -66,7 +72,7 @@ $ yarn global add now
 $ now --prod
 ```
 
-**Note:** if you're getting an error, you may need to add your `GCP_KEY` in ZEIT's settings dashboard: [zeit.co/{TEAM}/{PROJECT}/settings](https://zeit.co).
+**Note:** if you're getting an error, you may need to add your `GCP_KEY` and `GA_TRACKING_ID` in ZEIT's settings dashboard for production and development: [zeit.co/{TEAM}/{PROJECT}/settings](https://zeit.co).
 
 # 💰 Sponsors
 Huge thank you to [ZEIT](https://zeit.co/) for sponsoring this project and our related COVID-19 efforts, without them 

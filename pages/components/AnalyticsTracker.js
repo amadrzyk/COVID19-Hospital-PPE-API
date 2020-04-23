@@ -1,10 +1,10 @@
 import React from 'react'
-import { initGA, logPageView } from '../../utils/analytics'
+import { initGA, logPageView } from '../../analytics/frontend'
 
 export default class AnalyticsTracker extends React.Component {
-    componentDidMount () {
+    async componentDidMount () {
         if (!window.GA_INITIALIZED) {
-            initGA();
+            await initGA();
             window.GA_INITIALIZED = true
         }
         logPageView()
