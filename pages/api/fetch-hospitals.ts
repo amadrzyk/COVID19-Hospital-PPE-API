@@ -59,7 +59,7 @@ export default async (req: NowRequest, res: NowResponse) => {
         if (!app_name)
             throw 'app_name is undefined';
         if (app_name.length < 5)
-            throw `app_name "${app_name}" is shorter than 5 characters`;
+            throw `app_name ${app_name} is shorter than 5 characters`;
         if (!zip_code)
             throw 'zip_code is undefined';
         if (zip_code.length !== 5)
