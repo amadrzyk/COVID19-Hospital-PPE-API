@@ -34,7 +34,7 @@ export default class Home extends React.Component {
                 <Head>
                     <title>COVID-19 Hospital PPE API</title>
                     <link rel="icon" href="/favicon.ico" />
-            </Head>
+                </Head>
                 <main>
                     <h1 id="title">
                         COVID-19 Hospital PPE API
@@ -49,6 +49,15 @@ export default class Home extends React.Component {
                             Github Repository
                         </a>
                     </p>
+
+                    <div className="alertBubble">
+                        <span>⚠</span>
+                        <div>
+                            There have been numerous recent improvements to this API which may have affected its functionality,
+                            but from now on it will remain the same. Henceforth, API changes will remain behind a version tag,
+                            which will look like <code>/api/v2/function_name</code> rather than <code>/api/function_name</code>.
+                        </div>
+                    </div>
 
                     <div className="readmeBody">
                         <ReactMarkdown source={this.props.readme} />
