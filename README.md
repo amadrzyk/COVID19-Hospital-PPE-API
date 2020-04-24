@@ -40,6 +40,36 @@ If you'd like to help out with our efforts, please feel free to reach out! My em
 http://localhost:3000/api/fetch-hospitals?app_name=testing&zip_code=33160&radius_mi=15&resource_types=[%22all%22,%22gloves%22]
 ```
 
+### Sample Response Format
+
+All locations will be ordered from closest to farthest from the zip code:
+```
+{
+    "num_locations": 10,
+    "radius_mi": "15",
+    "locations": [
+        {
+            "timestamp": "3/23/2020 21:02:43",
+            "name": "Mount Sinai Medical Center",
+            "address": "4300 Alton Rd\nMiami Beach, FL 33140",
+            "orig_address": "4300 Alton Rd\nMiami Beach, FL 33140",
+            "city": "Miami Beach",
+            "state": "FL",
+            "instructions": "Emergency Room",
+            "accepting": "N95s, Surgical masks, Face shields, Disposable booties, Safety goggles, Gloves, Gowns",
+            "open_box": "Yes",
+            "request_type": "",
+            "encrypted_email": "",
+            "org_type": "Hospital",
+            "lat": "25.8131425",
+            "lng": "-80.1414482",
+            "distance_from_zipcode": "8.405431572665718"
+        },
+        ...
+    ]
+}
+```
+
 # 💻 Development
 
 ### Getting Started

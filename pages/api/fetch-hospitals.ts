@@ -1,4 +1,4 @@
-import { NowRequest, NowResponse } from '@now/node';
+import {NowRequest, NowResponse} from '@now/node';
 import axios from 'axios';
 import * as turf from '@turf/turf';
 import Analytics from 'analytics'
@@ -76,21 +76,28 @@ export default async (req: NowRequest, res: NowResponse) => {
             throw `resource_types contains invalid types. please select only from the following: ${Object.values(RESOURCE_TYPES).concat(RESOURCE_ALL)}`;
 
         // fetch data
-        let response = await axios.get(API_ENDPOINT);
-        const headers = response.data.values[1];
-        let acceptingIndex = headers.indexOf('accepting'),
-            latIndex = headers.indexOf('lat'),
-            lngIndex = headers.indexOf('lng');
-        let locations = response.data.values.splice(2);
+        const response_hospitals = await axios.get(API_ENDPOINT);
+        const headers = response_hospitals.data.values[1];
+        const locations_csv = response_hospitals.data.values.splice(2);
 
-        // filter out unapproved locations
-        locations = locations.filter(location => {
-            return location[0] == 'x'
+        // convert csv data array (with separate headers array) to simple object array with inline properties
+        let locations = [];
+        locations_csv.forEach(location => {
+            let newObj = {};
+            headers.forEach((header, index) => {
+                newObj[header] = location[index];
+            });
+            locations.push(newObj);
         });
 
-        // filter out locations that don't contain keywords
+        // filter for approved locations
         locations = locations.filter(location => {
-            let acceptedResourcesText = location[acceptingIndex];
+            return location.approved == 'x'
+        });
+
+        // filter for locations that contain keywords
+        locations = locations.filter(location => {
+            let acceptedResourcesText = location.accepting;
 
             // ensure acceptedResourcesText is filtered according to each resource type
             return resource_types.every(type => {
@@ -105,30 +112,59 @@ export default async (req: NowRequest, res: NowResponse) => {
         });
 
         // convert zip code to lat + lng
-        response = await axios.get(`${GOOGLE_GEOCODING_ENDPOINT}?address=${zip_code}&key=${process.env.GCP_KEY}`);
-        if (response.data.status !== "OK")
+        const response_geocode = await axios.get(`${GOOGLE_GEOCODING_ENDPOINT}?address=${zip_code}&key=${process.env.GCP_KEY}`);
+        if (response_geocode.data.status !== "OK")
             throw 'Unable to convert zip_code to latitude/longitude';
-        let zipCodeCoords = response.data.results[0].geometry.location;
+        let zipCodeCoords = response_geocode.data.results[0].geometry.location;
         zipCodeCoords = {
             lat: parseFloat(zipCodeCoords.lat),
             lng: parseFloat(zipCodeCoords.lng)
         };
 
-        // filter out locations that are not within the lat lng radius
+        // add distance from zip code to each location
+        locations = locations.map(location => {
+            location.distance_from_zipcode = -1;
+
+            if (location.lat && location.lng && location.lat != 'N/A' && location.lng != 'N/A'){
+                // convert to float
+                const locationCoords = {
+                    lat: parseFloat(location.lat),
+                    lng: parseFloat(location.lng)
+                };
+
+                location.distance_from_zipcode = turf.distance(
+                    turf.point([locationCoords.lng, locationCoords.lat]),
+                    turf.point([zipCodeCoords.lng, zipCodeCoords.lat]),
+                    {units: 'miles'}
+                );
+            }
+
+            return location;
+        });
+
+        // filter for locations that are within the lat lng radius
         locations = locations.filter(location => {
-            if (!location[latIndex] || !location[lngIndex] || location[latIndex] == 'N/A' || location[lngIndex] == 'N/A')
-                return false;
+            return 0 <= location.distance_from_zipcode && location.distance_from_zipcode <= parseFloat(radius_mi);
+        });
 
-            const locationCoords = {
-                lat: parseFloat(location[latIndex]),
-                lng: parseFloat(location[lngIndex])
-            };
+        // order locations by distance from zip
+        locations = locations.sort((a, b) => a.distance_from_zipcode > b.distance_from_zipcode ? 1 : -1);
 
-            return turf.distance(
-                turf.point([locationCoords.lng, locationCoords.lat]),
-                turf.point([zipCodeCoords.lng, zipCodeCoords.lat]),
-                {units: 'miles'}
-            ) < parseInt(radius_mi, 10);
+        // clean up location objects
+        locations = locations.map(location => {
+
+            // convert distance from float to string
+            location.distance_from_zipcode = location.distance_from_zipcode.toString();
+
+            // delete irrelevant keys
+            delete location.approved;
+            delete location.reason;
+            delete location.mod_status;
+            delete location.source;
+            delete location['source-row'];
+            delete location.row;
+
+            return location;
         });
 
         // track information for analytics
@@ -146,7 +182,7 @@ export default async (req: NowRequest, res: NowResponse) => {
         // return filtered locations
         res.json({
             num_locations: locations.length,
-            headers: headers,
+            radius_mi,
             locations: locations
         })
     } catch (err) {
