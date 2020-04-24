@@ -64,7 +64,7 @@ export default class Home extends React.Component {
                     </div>
                 </main>
                 <footer>
-                    Made with 💙by the COVID-19 Response Team and the&nbsp;<a target="_blank" rel="noopener noreferrer" href="https://www.facebook.com/InventionCorps/">Invention Corps</a>&nbsp;Community
+                    Made with 💙 by the COVID-19 Response Team and the&nbsp;<a target="_blank" rel="noopener noreferrer" href="https://www.facebook.com/InventionCorps/">Invention Corps</a>&nbsp;Community
                 </footer>
             </div>
         )
