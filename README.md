@@ -13,27 +13,34 @@ If you'd like to help out with our efforts, please feel free to reach out! My em
 # 🏹 API Querying
 
 ### Query Parameters
-- `app_name`
-    - DESCRIPTION: the name of your application
-    - REQUIRED: yes
-    - TYPE: string, at least 5 characters
-    - DEFAULT: none
+**Note:** Please make sure to use `JSON.stringify()` when using arrays for proper parsing
 - `radius_mi`
     - DESCRIPTION: radius around zip code in which to search for hospitals, in miles
     - REQUIRED: no
     - TYPE: number 
     - DEFAULT: 15 miles
+- `app_name`
+    - DESCRIPTION: the name of your application
+    - REQUIRED: yes
+    - TYPE: string, at least 5 characters
+    - DEFAULT: none
 - `zip_code`
     - DESCRIPTION: 5-digit US zip code
     - REQUIRED: yes
     - TYPE: number
+    - DEFAULT: none
+- `org_types`
+    - DESCRIPTION: filter for which organization types to display, i.e. mental health and dentist facilities
+    - REQUIRED: yes
+    - TYPE: array, at least one of the following options must be selected
+        - `['all', 'hospital', 'nursing_home', 'clinic', 'home_care', 'health_center', 'mental_health', 'assisted_living', 
+        'rehab', 'hospice', 'dentist', 'fire_dept', 'homeless_shelter', 'lab', 'pharmacy', 'food_bank', 'law_enforcement', 'other']`
     - DEFAULT: none
 - `resource_types`
     - DESCRIPTION: filter for which hospitals display, i.e. those that are looking for only `mask` and `gown` donations
     - REQUIRED: yes
     - TYPE: array, at least one of the following options must be selected
         - `['all', 'mask', 'respirator', 'shield', 'gown', 'disinfectant', 'gloves', 'footwear', 'eyewear', 'accessories']`
-        - Please make sure to use `JSON.stringify()` on the array for proper parsing
     - DEFAULT: none
     
 ### Sample API Call

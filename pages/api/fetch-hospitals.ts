@@ -32,6 +32,45 @@ function runMiddleware(req, res, fn) {
 const API_ENDPOINT = 'https://findthemasks.com/data.json',
       GOOGLE_GEOCODING_ENDPOINT = 'https://maps.googleapis.com/maps/api/geocode/json',
       DEFAULT_RADIUS = '15',
+      ORG_ALL = 'all',
+      ORG_TYPES = {
+          HOSPITAL: 'hospital',
+          NURSING_HOME: 'nursing_home',
+          CLINIC: 'clinic',
+          HOME_CARE: 'home_care',
+          HEALTH_CENTER: 'health_center',
+          MENTAL_HEALTH: 'mental_health',
+          ASSISTED_LIVING: 'assisted_living',
+          REHAB: 'rehab',
+          HOSPICE: 'hospice',
+          DENTIST: 'dentist',
+          FIRE_DEPT: 'fire_dept',
+          HOMELESS_SHELTER: 'homeless_shelter',
+          LAB: 'lab',
+          PHARMACY: 'pharmacy',
+          FOOD_BANK: 'food_bank',
+          LAW_ENFORCEMENT: 'law_enforcement',
+          OTHER: 'other'
+      },
+      ORG_KEYWORDS = {
+          [ORG_TYPES.HOSPITAL]: ['hospital', 'emergency medical', 'urgent', 'medical', 'ambulatory', 'travel nurse'],
+          [ORG_TYPES.NURSING_HOME]: ['nursing'],
+          [ORG_TYPES.CLINIC]: ['clinic', 'doctor', 'office', 'testing location'],
+          [ORG_TYPES.HOME_CARE]: ['home care'],
+          [ORG_TYPES.HEALTH_CENTER]: ['community health', 'public health', 'dialysis'],
+          [ORG_TYPES.MENTAL_HEALTH]: ['mental'],
+          [ORG_TYPES.ASSISTED_LIVING]: ['assisted'],
+          [ORG_TYPES.REHAB]: ['rehab', 'addiction'],
+          [ORG_TYPES.HOSPICE]: ['hospice'],
+          [ORG_TYPES.DENTIST]: ['dentist'],
+          [ORG_TYPES.FIRE_DEPT]: ['fire'],
+          [ORG_TYPES.HOMELESS_SHELTER]: ['homeless'],
+          [ORG_TYPES.LAB]: ['lab'],
+          [ORG_TYPES.PHARMACY]: ['pharmacy'],
+          [ORG_TYPES.FOOD_BANK]: ['food'],
+          [ORG_TYPES.LAW_ENFORCEMENT]: ['detention', 'law'],
+          [ORG_TYPES.OTHER]: ['', 'other', 'non-medical', 'union'],
+      },
       RESOURCE_ALL = 'all',
       RESOURCE_TYPES = {
           MASK: 'mask',
@@ -45,7 +84,7 @@ const API_ENDPOINT = 'https://findthemasks.com/data.json',
           ACCESSORIES: 'accessories'
       },
       // keywords to search for
-      KEYWORDS = {
+      RESOURCE_KEYWORDS = {
           [RESOURCE_TYPES.MASK]: ['n95', 'p95', 'r95', 'n99', 'r99', 'p100', 'r100', 'face', 'mask', 'surgical', 'level', 'cotton'],
           [RESOURCE_TYPES.RESPIRATOR]: ['respirator', 'BIPAP', 'CPAP', 'PAPR'],
           [RESOURCE_TYPES.SHIELD]: ['shield', 'maxair', 'CAPR', 'halyard'],
@@ -75,7 +114,10 @@ export default async (req: NowRequest, res: NowResponse) => {
         let app_name = req.query.app_name as string,
             zip_code = req.query.zip_code as string,
             radius_mi = (req.query.radius_mi || DEFAULT_RADIUS) as string,
+            org_types = JSON.parse((req.query.org_types || '[]') as string),
             resource_types = JSON.parse((req.query.resource_types || '[]') as string);
+
+        console.log(org_types);
 
         // validate input
         if (!app_name)
@@ -88,12 +130,18 @@ export default async (req: NowRequest, res: NowResponse) => {
             throw 'zip_code is either missing or has incorrect formatting';
         if (!/^\d+$/.test(radius_mi))
             throw 'radius_mi does not contain a valid value';
+        if (!org_types)
+            throw 'org_types is undefined';
+        if (!Array.isArray(org_types))
+            throw 'org_types was not formatted properly. please use JSON.stringify() on your array for proper formatting';
+        if (org_types.every(type => Object.values(ORG_TYPES).indexOf(type) == -1 && type !== ORG_ALL))
+            throw `org_types contains invalid types. please select only from the following: [${Object.values(ORG_TYPES).concat(ORG_ALL)}]`;
         if (!resource_types)
             throw 'resource_types is undefined';
         if (!Array.isArray(resource_types))
-            throw 'resource_types either doesnt exist or was not formatted properly. please use JSON.stringify() on your array for proper formatting';
+            throw 'resource_types was not formatted properly. please use JSON.stringify() on your array for proper formatting';
         if (resource_types.every(type => Object.values(RESOURCE_TYPES).indexOf(type) == -1 && type !== RESOURCE_ALL))
-            throw `resource_types contains invalid types. please select only from the following: ${Object.values(RESOURCE_TYPES).concat(RESOURCE_ALL)}`;
+            throw `resource_types contains invalid types. please select only from the following: [${Object.values(RESOURCE_TYPES).concat(RESOURCE_ALL)}]`;
         if (!process.env.GCP_KEY)
             throw 'GCP_KEY (api key) not found';
 
@@ -117,17 +165,33 @@ export default async (req: NowRequest, res: NowResponse) => {
             return location.approved == 'x'
         });
 
-        // filter for locations that contain keywords
+        // filter for locations that contain org_type keywords
+        locations = locations.filter(location => {
+            let orgTypeText = location.org_type;
+
+            // ensure orgTypeText is filtered according to each org type
+            return org_types.some(type => {
+                if (type === ORG_ALL)
+                    return true;
+
+                // must contain at least one of the keywords
+                return ORG_KEYWORDS[type].some(
+                    keyword =>  orgTypeText.toLowerCase().includes(keyword.toLowerCase())
+                );
+            })
+        });
+
+        // filter for locations that contain resources keywords
         locations = locations.filter(location => {
             let acceptedResourcesText = location.accepting;
 
             // ensure acceptedResourcesText is filtered according to each resource type
-            return resource_types.every(type => {
+            return resource_types.some(type => {
                 if (type === RESOURCE_ALL)
                     return true;
 
                 // must contain at least one of the keywords
-                return KEYWORDS[type].some(
+                return RESOURCE_KEYWORDS[type].some(
                     keyword => acceptedResourcesText.toLowerCase().includes(keyword.toLowerCase())
                 );
             });
