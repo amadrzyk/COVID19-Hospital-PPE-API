@@ -45,7 +45,7 @@ If you'd like to help out with our efforts, please feel free to reach out! My em
     
 ### Sample API Call
 ``` 
-http://localhost:3000/api/fetch-hospitals?app_name=testing&zip_code=33160&radius_mi=15&resource_types=[%22all%22,%22gloves%22]
+http://localhost:3000/api/fetch-hospitals?app_name=testing&zip_code=33160&radius_mi=15&resource_types=[%22gloves%22]&org_types=[%22all%22]
 ```
 
 ### Sample Response Format
