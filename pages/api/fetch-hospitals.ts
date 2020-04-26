@@ -75,7 +75,7 @@ export default async (req: NowRequest, res: NowResponse) => {
         let app_name = req.query.app_name as string,
             zip_code = req.query.zip_code as string,
             radius_mi = (req.query.radius_mi || DEFAULT_RADIUS) as string,
-            resource_types = JSON.parse((req.query.resource_types || "[]") as string);
+            resource_types = JSON.parse((req.query.resource_types || '[]') as string);
 
         // validate input
         if (!app_name)
@@ -91,11 +91,11 @@ export default async (req: NowRequest, res: NowResponse) => {
         if (!resource_types)
             throw 'resource_types is undefined';
         if (!Array.isArray(resource_types))
-            throw 'resource_types either doesnt exist or is not an array';
-        if (!process.env.GCP_KEY)
-            throw 'GCP_KEY (api key) not found';
+            throw 'resource_types either doesnt exist or was not formatted properly. please use JSON.stringify() on your array for proper formatting';
         if (resource_types.every(type => Object.values(RESOURCE_TYPES).indexOf(type) == -1 && type !== RESOURCE_ALL))
             throw `resource_types contains invalid types. please select only from the following: ${Object.values(RESOURCE_TYPES).concat(RESOURCE_ALL)}`;
+        if (!process.env.GCP_KEY)
+            throw 'GCP_KEY (api key) not found';
 
         // fetch data
         const response_hospitals = await axios.get(API_ENDPOINT);

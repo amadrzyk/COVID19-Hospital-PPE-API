@@ -33,7 +33,7 @@ If you'd like to help out with our efforts, please feel free to reach out! My em
     - REQUIRED: yes
     - TYPE: array, at least one of the following options must be selected
         - `['all', 'mask', 'respirator', 'shield', 'gown', 'disinfectant', 'gloves', 'footwear', 'eyewear', 'accessories']`
-        - Please make sure the array is serialized in your request
+        - Please make sure to use `JSON.stringify()` on the array for proper parsing
     - DEFAULT: none
     
 ### Sample API Call
