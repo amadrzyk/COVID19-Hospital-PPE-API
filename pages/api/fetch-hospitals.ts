@@ -1,5 +1,6 @@
 import {NowRequest, NowResponse} from '@now/node';
 import axios from 'axios';
+import Cors from 'cors';
 import * as turf from '@turf/turf';
 import Analytics from 'analytics'
 import googleAnalytics from '@analytics/google-analytics'
@@ -7,6 +8,24 @@ import googleAnalytics from '@analytics/google-analytics'
 // import environment variables in dev
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
+}
+
+// initializing the cors middleware
+const cors = Cors({
+    methods: ['GET', 'HEAD'],
+});
+
+// helper method to wait for a middleware to execute before continuing and to throw an error when an error happens in a middleware
+function runMiddleware(req, res, fn) {
+    return new Promise((resolve, reject) => {
+        fn(req, res, result => {
+            if (result instanceof Error) {
+                return reject(result)
+            }
+
+            return resolve(result)
+        })
+    })
 }
 
 // constants
@@ -48,6 +67,9 @@ const API_ENDPOINT = 'https://findthemasks.com/data.json',
 
 // api handler
 export default async (req: NowRequest, res: NowResponse) => {
+    // apply cors to request
+    await runMiddleware(req, res, cors);
+
     try {
         // fetch query args
         let app_name = req.query.app_name as string,
