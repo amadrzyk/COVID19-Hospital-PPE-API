@@ -50,6 +50,7 @@ export default class Home extends React.Component {
                         </a>
                     </p>
 
+                    <!--
                     <div className="alertBubble">
                         <span>⚠</span>
                         <div>
@@ -58,6 +59,7 @@ export default class Home extends React.Component {
                             which will look like <code>/api/v2/function_name</code> rather than <code>/api/function_name</code>.
                         </div>
                     </div>
+                    -->
 
                     <div className="readmeBody">
                         <ReactMarkdown source={this.props.readme} />
