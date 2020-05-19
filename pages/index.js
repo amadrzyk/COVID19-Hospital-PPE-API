@@ -3,8 +3,6 @@ import React from 'react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 
-const README_PATH = '../README.md';
-
 export default class Home extends React.Component {
 
     static async getInitialProps(ctx) {

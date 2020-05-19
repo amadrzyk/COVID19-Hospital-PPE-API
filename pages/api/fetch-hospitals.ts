@@ -78,6 +78,7 @@ const API_ENDPOINT = 'https://findthemasks.com/data.json',
           SHIELD: 'shield',
           GOWN: 'gown',
           DISINFECTANT: 'disinfectant',
+          SANITIZER: 'sanitizer',
           GLOVES: 'gloves',
           FOOTWEAR: 'footwear',
           EYEWEAR: 'eyewear',
@@ -90,6 +91,7 @@ const API_ENDPOINT = 'https://findthemasks.com/data.json',
           [RESOURCE_TYPES.SHIELD]: ['shield', 'maxair', 'CAPR', 'halyard'],
           [RESOURCE_TYPES.GOWN]: ['gown', 'lab coat', 'scrub', 'poncho', 'coverall', 'overall'],
           [RESOURCE_TYPES.DISINFECTANT]: ['disinfectant', 'spray', 'lysol', 'bleach', 'clorox', 'wipe', 'sanitiz', 'cleaning', 'alcohol', 'antibacterial'],
+          [RESOURCE_TYPES.SANITIZER]: ['sanitiz'],
           [RESOURCE_TYPES.GLOVES]: ['glove', 'nitrile'],
           [RESOURCE_TYPES.FOOTWEAR]: ['booties', 'shoe', 'shoe cover'],
           [RESOURCE_TYPES.EYEWEAR]: ['eye', 'goggle'],
@@ -266,6 +268,7 @@ export default async (req: NowRequest, res: NowResponse) => {
         });
 
         // return filtered locations
+        res.setHeader('Cache-Control', 's-maxage=1, stale-while-revalidate');
         res.json({
             num_locations: locations.length,
             radius_mi,

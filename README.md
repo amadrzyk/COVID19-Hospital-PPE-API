@@ -40,7 +40,7 @@ If you'd like to help out with our efforts, please feel free to reach out! My em
     - DESCRIPTION: filter for which hospitals display, i.e. those that are looking for only `mask` and `gown` donations
     - REQUIRED: yes
     - TYPE: array, at least one of the following options must be selected
-        - `['all', 'mask', 'respirator', 'shield', 'gown', 'disinfectant', 'gloves', 'footwear', 'eyewear', 'accessories']`
+        - `['all', 'mask', 'respirator', 'shield', 'gown', 'disinfectant', 'sanitizer', 'gloves', 'footwear', 'eyewear', 'accessories']`
     - DEFAULT: none
     
 ### Sample API Call
